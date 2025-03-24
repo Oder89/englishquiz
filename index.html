@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İngilis Dili Quiz  </title>
+  <style>
+    body {
+      background-color: #3498db; /* Göy rəng */
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .quiz-box {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 32px;
+      color: #fff;
+    }
+
+    .question {
+      font-size: 26px;
+      margin-bottom: 25px;
+      font-weight: bold;
+    }
+
+    input {
+      padding: 15px;
+      width: 80%;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      background-color: #fff;
+      color: #333;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #f1f1f1;
+    }
+
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+
+    .correct { color: #00ffae; }
+    .wrong { color: #ff4b5c; }
+    .warning { color: #ffffff; }
+
+    .stats {
+      margin-top: 30px;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 15px;
+      font-size: 18px;
+      color: #fff;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <h1>İngilis Dili Quiz</h1>
+    <div class="question" id="question">Söz yüklənir...</div>
+    <input type="text" id="userInput" placeholder="Tərcüməni yaz">
+    <br>
+    <button onclick="checkAnswer()">Cavabı Yoxla</button>
+    <div class="result" id="result"></div>
+    <button onclick="nextQuestion()">Növbəti Sual</button>
+
+    <div class="stats">
+      ✅ Düzgün cavablar: <span id="correctCount">0</span><br>
+      ❌ Səhv cavablar: <span id="wrongCount">0</span><br>
+      📊 Ümumi nəticə: <span id="percentage">0</span>%<br>
+      © AzeDevelop-İbrahimzadə
+    </div>
+  </div>
+
+  <script>
+    const wordList = [
+{ en: "road", az: "Yol" },
+{ en: "drive", az: "sürmək" },
+{ en: "arm", az: "qol" },
+{ en: "true", az: "doğru" },
+{ en: "federal", az: "federal" },
+{ en: "break", az: "fasilə" },
+{ en: "difference", az: "fərqlilik" },
+{ en: "thank", az: "təşəkkür" },
+{ en: "receive", az: "almaq" },
+{ en: "value", az: "dəyəri" },
+{ en: "international", az: "beynəlxalq" },
+{ en: "building", az: "bina" },
+{ en: "action", az: "fəaliyyət" },
+{ en: "full", az: "dolu" },
+{ en: "model", az: "model" },
+{ en: "join", az: "qoşulmaq" },
+{ en: "season", az: "mövsüm	" },
+{ en: "society", az: "cəmiyyət	" },
+{ en: "tax", az: "vergi" },
+{ en: "director", az: "direktor" },
+{ en: "position", az: "mövqe" },
+{ en: "player", az: "pleyer" },
+{ en: "agree", az: "razılaşmaq" },
+{ en: "especially	", az: "xüsusilə" },
+{ en: "record", az: "qeyd" },
+{ en: "wear	", az: "köhnəlmək" },
+{ en: "paper	", az: "kağız" },
+{ en: "special	", az: "xüsusi" },
+{ en: "space", az: "boşluq" },
+{ en: "	ground", az: "torpaq" },
+{ en: "	form", az: "forma" },
+{ en: "	support	", az: "dəstək" },
+{ en: "event", az: "hadisə" },
+{ en: "official", az: "rəsmi" },
+{ en: "whose", az: "kimin" },
+{ en: "matter", az: "məsələ" },
+{ en: "everyone", az: "hər kəs" },
+{ en: "center", az: "mərkəz" },
+{ en: "couple", az: "cütlük"},
+{ en: "site", az: "sayt" },
+{ en: "project	", az: "layihə" },
+{ en: "hit", az: "vurdu" },
+{ en: "base", az: "baza" },
+{ en: "activity	", az: "fəaliyyət" },
+{ en: "star", az: "	ulduz" },
+{ en: "table", az: "masa" },
+{ en: "court", az: "məhkəmə" },
+{ en: "produce", az: "istehsal" },
+{ en: "eat", az: "yemək" },
+{ en: "teach", az: "öyrətmək" },
+{ en: "oil", az: "yağ" },
+{ en: "half", az: "yarım" },
+{ en: "situation", az: "vəziyyət" },
+{ en: "easy", az: "asan" },
+{ en: "cost", az: "dəyəri" },
+{ en: "industry", az: "sənaye" },
+{ en: "figure", az: "fiqur" },
+{ en: "street", az: "küçə" },
+{ en: "image", az: "şəkil" },
+      { en: "tree", az: "ağac" },
+      { en: "river", az: "çay" },
+      { en: "sky", az: "səma" },
+      { en: "phone", az: "telefon" },
+      { en: "music", az: "musiqi" },
+      { en: "city", az: "şəhər" },
+      { en: "food", az: "yemək" },
+      { en: "family", az: "ailə" }
+    ];
+
+    let currentWord;
+    let correct = 0;
+    let wrong = 0;
+
+    function nextQuestion() {
+      const index = Math.floor(Math.random() * wordList.length);
+      currentWord = wordList[index];
+      document.getElementById("question").innerText = `Tərcümə et: ${currentWord.en}`;
+      document.getElementById("result").innerText = "";
+      document.getElementById("userInput").value = "";
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById("userInput").value.trim().toLowerCase();
+      const result = document.getElementById("result");
+
+      if (userInput === "") {
+        result.innerHTML = "<span class='warning'>⚠️ Zəhmət olmasa tərcüməni yazın!</span>";
+        return;
+      }
+
+      if (userInput === currentWord.az) {
+        result.innerHTML = "<span class='correct'>✅ Düzgün!</span>";
+        correct++;
+      } else {
+        result.innerHTML = `<span class='wrong'>❌ Səhv! Doğru cavab: ${currentWord.az}</span>`;
+        wrong++;
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById("correctCount").innerText = correct;
+      document.getElementById("wrongCount").innerText = wrong;
+      const total = correct + wrong;
+      const percent = total === 0 ? 0 : ((correct / total) * 100).toFixed(1);
+      document.getElementById("percentage").innerText = percent;
+    }
+
+    // Başlanğıc sualı gətir
+    nextQuestion();
+  </script>
+
+</body>
+</html>
